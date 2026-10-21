@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>QR для группы</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0f11;--panel:#17191c;--line:#2a2d32;--text:#f2f2f0;--muted:#9a9ea6;--green:#6fdc62}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif}
+.wrap{max-width:520px;margin:0 auto;padding:24px 16px}
+.brand{font-weight:800;letter-spacing:.14em;font-size:12px;color:var(--muted)}
+h1{font-size:26px;margin:20px 0 6px}
+p{color:#c9ccd1;font-size:14px;line-height:1.5;margin:0 0 10px}
+input{width:100%;font:inherit;font-size:17px;padding:14px;border-radius:12px;border:1px solid var(--line);background:#0b0c0e;color:var(--text);margin-top:10px}
+.btn{display:block;width:100%;font:inherit;font-weight:700;font-size:16px;padding:14px;border-radius:12px;border:0;background:var(--green);color:#0b0c0e;cursor:pointer;margin-top:10px;text-align:center;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+#out{margin-top:20px}
+#qr{background:#fff;padding:18px;border-radius:14px;display:flex;justify-content:center}
+#qr img,#qr canvas{width:100%;max-width:340px;height:auto}
+.link{word-break:break-all;font-size:13px;color:var(--muted);margin:10px 0}
+.full{position:fixed;inset:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9;cursor:pointer}
+.full img,.full canvas{width:min(80vh,90vw)!important;height:auto}
+.full div{color:#111;font:800 28px Manrope,sans-serif;margin-top:16px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">TEAM EXPERT</div>
+  <h1>QR-код для группы</h1>
+  <p>Введите метку группы — например, «Сбер 21.10». Участники её не видят, по ней результаты группируются в таблице.</p>
+  <input id="g" placeholder="Метка группы" maxlength="60" autocomplete="off">
+  <button class="btn" id="make">Создать QR-код</button>
+  <div id="out" class="hidden">
+    <div id="qr"></div>
+    <div class="link" id="lnk"></div>
+    <button class="btn" id="show">Показать на весь экран</button>
+    <button class="btn ghost" id="png">Скачать картинку PNG</button>
+    <button class="btn ghost" id="copy">Скопировать ссылку</button>
+  </div>
+  <a class="btn ghost hidden" id="sheet" target="_blank" rel="noopener" style="margin-top:28px">Открыть таблицу результатов</a>
+</div>
+<div class="full hidden" id="full"></div>
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+var SHEET_URL = (window.APP_CONFIG||{}).SHEET_URL || "";
+var base = location.href.replace(/qr\.html.*$/,"").split("?")[0];
+var url = "";
+if (SHEET_URL){ var s=document.getElementById("sheet"); s.href=SHEET_URL; s.classList.remove("hidden"); }
+var g = document.getElementById("g");
+try{ g.value = localStorage.getItem("qr_last") || ""; }catch(e){}
+function make(){
+  var v = g.value.trim(); if (!v){ g.focus(); return; }
+  try{ localStorage.setItem("qr_last", v); }catch(e){}
+  url = base + "?g=" + encodeURIComponent(v);
+  var box = document.getElementById("qr"); box.innerHTML = "";
+  new QRCode(box, {text:url, width:600, height:600, correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById("lnk").textContent = url;
+  document.getElementById("out").classList.remove("hidden");
+}
+document.getElementById("make").onclick = make;
+g.onkeydown = function(e){ if (e.key==="Enter") make(); };
+function src(){ var c=document.querySelector("#qr canvas"); return c ? c.toDataURL("image/png") : document.querySelector("#qr img").src; }
+document.getElementById("show").onclick = function(){
+  var f=document.getElementById("full"); f.innerHTML='<img src="'+src()+'"><div>Агрессия в переговорах</div>'; f.classList.remove("hidden");
+};
+document.getElementById("full").onclick = function(){ this.classList.add("hidden"); };
+document.getElementById("png").onclick = function(){
+  var a=document.createElement("a"); a.href=src(); a.download="QR_"+g.value.trim().replace(/[^\wа-яё.-]+/gi,"_")+".png"; a.click();
+};
+document.getElementById("copy").onclick = function(){
+  var b=this; (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){b.textContent="Скопировано";setTimeout(function(){b.textContent="Скопировать ссылку";},1500);},function(){prompt("Ссылка:",url);});
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Подключение таблицы</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e0f11;--panel:#17191c;--line:#2a2d32;--text:#f2f2f0;--muted:#9a9ea6;--green:#6fdc62}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Manrope,system-ui,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:24px 16px 48px}
+.brand{font-weight:800;letter-spacing:.14em;font-size:12px;color:var(--muted)}
+h1{font-size:26px;margin:20px 0 8px}p,li{color:#d4d6da;font-size:15px;line-height:1.55}
+ol{padding-left:22px}li{margin-bottom:12px}b{color:var(--text)}a{color:var(--green)}
+.btn{display:inline-block;font:inherit;font-weight:700;font-size:15px;padding:12px 16px;border-radius:10px;border:0;background:var(--green);color:#0b0c0e;cursor:pointer;text-decoration:none;margin:6px 0}
+textarea{width:100%;height:160px;font:12px/1.4 ui-monospace,Menlo,monospace;background:#0b0c0e;color:#cfd2d6;border:1px solid var(--line);border-radius:10px;padding:10px}
+.note{font-size:13px;color:var(--muted)}
+</style></head><body><div class="wrap">
+<div class="brand">TEAM EXPERT</div>
+<h1>Подключение таблицы результатов</h1>
+<p>Делается один раз, с компьютера, около 3 минут. Войдите в Google под аккаунтом <b>restaranov@gmail.com</b>.</p>
+<ol>
+<li><a class="btn" href="https://script.google.com/home/projects/create" target="_blank" rel="noopener">Открыть новый скрипт Google</a></li>
+<li><button class="btn" id="cp">Скопировать код</button><br>В редакторе выделите всё (Ctrl+A / ⌘A), удалите и вставьте скопированное. Нажмите значок дискеты — <b>Сохранить</b>.</li>
+<li>В строке сверху выберите функцию <b>setup</b> и нажмите <b>Выполнить</b>. Google попросит доступ: <b>Проверить разрешения</b> → ваш аккаунт → <b>Дополнительные настройки</b> → <b>Перейти на страницу проекта</b> → <b>Разрешить</b>. Это ваш собственный скрипт, предупреждение стандартное.</li>
+<li>Справа вверху: <b>Начать развертывание</b> → <b>Новое развертывание</b>. Нажмите шестерёнку → <b>Веб-приложение</b>. Поля: «Запуск от имени» — <b>Я</b>, «У кого есть доступ» — <b>Все</b>. Нажмите <b>Начать развертывание</b>.</li>
+<li>Скопируйте <b>URL веб-приложения</b> (заканчивается на /exec) и пришлите его мне в чат.</li>
+</ol>
+<p class="note">Код для проверки:</p>
+<textarea id="code" readonly>Загрузка кода…</textarea>
+</div>
+<script>
+fetch("backend/Code.gs",{cache:"no-store"}).then(function(r){return r.text();}).then(function(t){document.getElementById("code").value=t;});
+document.getElementById("cp").onclick=function(){var t=document.getElementById("code"),b=this;
+(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(function(){b.textContent="Скопировано ✓";},function(){t.select();document.execCommand("copy");b.textContent="Скопировано ✓";});};
+</script></body></html>
